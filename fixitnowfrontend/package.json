@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "daisyui": "^5.7.16",
     "next": "16.3.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
@@ -32,5 +33,6 @@
   "trustedDependencies": [
     "sharp",
     "unrs-resolver"
-  ]
+  ],
+  "browserslist": "> 1%"
 }
