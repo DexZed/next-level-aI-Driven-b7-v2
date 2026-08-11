@@ -1,11 +1,9 @@
-import Footer from "@/components/footer";
-import Navbar from "@/components/navbar";
-import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <>
-      <Navbar />
+
       <div className="hero bg-base-200 min-h-screen">
         <div className="hero-content text-center">
           <div className="max-w-md">
@@ -14,13 +12,14 @@ export default function Home() {
               Welcome to Fix It Now
             </p>
             <div className="flex gap-2 justify-center">
-              <button className="btn btn-outline btn-primary rounded-md">Explore</button>
-              <button className="btn btn-outline btn-info rounded-md">Login</button>
+              <Link className="btn btn-outline btn-primary rounded-md" href={'/auth/login'}>Login</Link>
+              <Link className="btn btn-outline btn-info rounded-md" href={"/auth/register"}>Sign Up</Link>
+
             </div>
           </div>
         </div>
       </div>
-      <Footer />
+
     </>
   );
 }
