@@ -12,10 +12,16 @@
     "auth:generate": "pnpm dlx auth@latest generate --output ./src/drizzle/schemas/auth-new-schema.ts --yes"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.7.1",
+    "@neondatabase/serverless": "^1.1.0",
+    "better-auth": "^1.6.26",
     "daisyui": "^5.7.16",
+    "drizzle-orm": "^1.0.0-rc.4",
     "next": "16.3.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-hook-form": "^7.85.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -23,6 +29,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "drizzle-kit": "^1.0.0-rc.4",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "tailwindcss": "^4",
