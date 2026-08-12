@@ -1,5 +1,8 @@
 import getUserSession from "@/lib/dal";
 import { Suspense } from "react";
+import UsersCard from "./dashboard/_components/users-card";
+import BookingsCard from "./dashboard/_components/bookings-card";
+import PaymentsCard from "./dashboard/_components/payments-card";
 
 async function UserData() {
   const data = await getUserSession();
@@ -17,8 +20,8 @@ async function UserData() {
 async function AdminPage() {
   return (
     <>
-      <div className="min-h-screen">
-        <div className="hero bg-base-200">
+      <div className="">
+        <div className="hero bg-base-200 h-50">
           <div className="hero-content text-center">
             <div className="max-w-md">
               <Suspense fallback={SkeletonHero()}>
@@ -27,8 +30,14 @@ async function AdminPage() {
             </div>
           </div>
         </div>
-        <div className="hero flex justify-center items-center gap-4 w-full">
-          {SkeletonCards(4)}
+        <div className="hero w-full mt-5">
+          <Suspense fallback={SkeletonCards(4)}>
+            <div className="flex flex-wrap  justify-center items-center gap-4">
+              <UsersCard />
+              <BookingsCard />
+              <PaymentsCard />
+            </div>
+          </Suspense>
         </div>
       </div>
     </>
