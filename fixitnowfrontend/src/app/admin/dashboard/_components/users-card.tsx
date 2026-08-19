@@ -3,7 +3,7 @@ import { getUsers } from "@/lib/dal";
 type Props = {};
 
 async function UsersCard({}: Props) {
-  const users = await getUsers();
+  // const users = await getUsers();
   return (
     <>
       <div className="aura aura-dual">
@@ -11,7 +11,10 @@ async function UsersCard({}: Props) {
           <div className="card-body">
             <div className="flex flex-col justify-center items-center text-center">
               <div className="stat-title">Total Users</div>
-              <div className="stat-value text-primary">{users.length}</div>
+              <div className="stat-value text-primary">
+                {/* {users.length} */}
+                100
+              </div>
               <div className="stat-desc">21% more than last month</div>
             </div>
           </div>

@@ -16,8 +16,10 @@ function Select({ name, props, selectClass, children, options }: Props) {
     <fieldset className="fieldset">
       <legend className="fieldset-legend">{name}</legend>
       <select id={name} {...props} className={selectClass}>
-        {options.map((o) => (
-          <option value={o.value}>{o.label}</option>
+        {options.map((o, i) => (
+          <option key={i} value={o.value}>
+            {o.label}
+          </option>
         ))}
       </select>
       {children}
