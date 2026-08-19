@@ -1,8 +1,8 @@
 import getUserSession from "@/lib/dal";
 import { Suspense } from "react";
-import UsersCard from "./dashboard/_components/users-card";
-import BookingsCard from "./dashboard/_components/bookings-card";
-import PaymentsCard from "./dashboard/_components/payments-card";
+import UsersCard from "./_components/users-card";
+import BookingsCard from "./_components/bookings-card";
+import PaymentsCard from "./_components/payments-card";
 
 async function UserData() {
   const data = await getUserSession();
