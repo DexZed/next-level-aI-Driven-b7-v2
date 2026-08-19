@@ -1,15 +1,39 @@
-import { pgTable, serial, integer, timestamp, time, pgEnum, varchar } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  timestamp,
+  pgEnum,
+  uuid,
+  doublePrecision,
+  text,
+} from "drizzle-orm/pg-core";
+import { bookings, statusEnum } from "./booking-schema";
+import { relations } from "drizzle-orm/_relations";
 
-export const paymentStatusEnum = pgEnum('payment_status', ['pending', 'success', 'failed', 'refunded'])
+export const paymentStatusEnum = pgEnum("payment_status", [
+  "pending",
+  "success",
+  "failed",
+  "refunded",
+]);
 
-export const payments = pgTable('payments', {
-    id: serial('id').primaryKey(),
-    status: paymentStatusEnum('status').default('pending').notNull(),
-    amount: integer('amount').notNull(),
-    provider: varchar('provider', { length: 255 }).notNull(),
-    // serviceId: integer('service_id').notNull(),
-    // technicianId: integer('technician_id').notNull(),
-    // customerId: integer('customer_id').notNull(),
-    // bookingDate: timestamp('booking_date').notNull(),
-    // bookingTime: time('booking_time').notNull(),
-})
+export const payments = pgTable("payments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  bookingId: uuid("booking_id")
+    .notNull()
+    .references(() => bookings.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+  amount: doublePrecision("amount").notNull(),
+  method: text("method").notNull(),
+  provider: text("provider").notNull(),
+  status: statusEnum("status").default("pending").notNull(),
+  paidAt: timestamp("paid_at", { mode: "date" }).defaultNow(),
+});
+
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  booking: one(bookings, {
+    fields: [payments.bookingId],
+    references: [bookings.id],
+  }),
+}));

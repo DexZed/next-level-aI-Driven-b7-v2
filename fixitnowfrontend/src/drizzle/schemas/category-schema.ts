@@ -1,9 +1,19 @@
-import { boolean, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+import { boolean, pgTable, uuid, text, index } from "drizzle-orm/pg-core";
+import { services } from "./service-schema";
+import { relations } from "drizzle-orm/_relations";
 
-export const categories = pgTable('categories', {
-    id: serial('id').primaryKey(),
-    name: varchar('name', { length: 255 }).notNull(),
-    description: varchar('description', { length: 1000 }).notNull(),
-    is_active: boolean('is_active').default(true).notNull(),
-})
+// Categories Table
+export const categories = pgTable(
+  "categories",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    description: text("description").notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+  },
+  (table) => [index("categories_name_idx").on(table.name)],
+);
 
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  services: many(services),
+}));

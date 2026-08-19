@@ -1,7 +1,33 @@
-import { pgTable, serial, varchar } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, index } from "drizzle-orm/pg-core";
+import { categories } from "./category-schema";
+import { relations } from "drizzle-orm/_relations";
+import { bookings } from "./booking-schema";
+import { technicianServices } from "./techService-schema";
 
-export const services = pgTable('services', {
-    id: serial('id').primaryKey(),
-    name: varchar('name', { length: 255 }).notNull(),
-    description: varchar('description', { length: 1000 }).notNull(),
-})
+// Services Table
+export const services = pgTable(
+  "services",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    description: text("description").notNull(),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => categories.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+  },
+  (table) => [
+    index("services_name_idx").on(table.name),
+    index("services_category_id_idx").on(table.categoryId),
+  ],
+);
+export const servicesRelations = relations(services, ({ one, many }) => ({
+  category: one(categories, {
+    fields: [services.categoryId],
+    references: [categories.id],
+  }),
+  bookings: many(bookings),
+  technicianServices: many(technicianServices),
+}));
