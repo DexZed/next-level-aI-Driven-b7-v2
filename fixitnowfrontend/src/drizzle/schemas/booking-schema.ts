@@ -1,23 +1,24 @@
 import { relations } from "drizzle-orm/_relations";
-import { pgTable, serial, integer, timestamp, time, pgEnum, uuid, doublePrecision, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  timestamp,
+  uuid,
+  doublePrecision,
+  index,
+  text,
+} from "drizzle-orm/pg-core";
 import { technicians } from "./technician-schema";
 import { user } from "./auth-schema";
 import { services } from "./service-schema";
 import { payments } from "./payments-schema";
 import { reviews } from "./review-schema";
-export const statusEnum = pgEnum("status", [
-  "pending",
-  "confirmed",
-  "completed",
-  "cancelled",
-  "in_progress",
-]);
+import { statusEnum } from "./enums";
 
 export const bookings = pgTable(
   "bookings",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => user.id, {
         onDelete: "cascade",
@@ -40,16 +41,12 @@ export const bookings = pgTable(
       .defaultNow()
       .notNull(),
     totalPrice: doublePrecision("total_price").notNull(),
-    createdAt: timestamp("created_at", { mode: "date" })
-      .defaultNow()
-      .notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" })
-      .defaultNow()
-      .notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
   },
   (table) => [
     index("bookings_user_id_status_idx").on(table.userId, table.status),
-  ]
+  ],
 );
 export const bookingsRelations = relations(bookings, ({ one, many }) => ({
   user: one(user, {

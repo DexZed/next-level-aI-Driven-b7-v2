@@ -19,7 +19,7 @@ export const technicians = pgTable(
     bio: text("bio").notNull(),
     isAvailable: boolean("is_available").default(true).notNull(),
     ratingAvg: doublePrecision("ratingAvg").default(0.0).notNull(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => user.id, {
         onDelete: "cascade",
@@ -30,9 +30,9 @@ export const technicians = pgTable(
   (table) => [
     index("technicians_availability_rating_idx").on(
       table.isAvailable,
-      table.ratingAvg
+      table.ratingAvg,
     ),
-  ]
+  ],
 );
 
 export const techniciansRelations = relations(technicians, ({ one, many }) => ({

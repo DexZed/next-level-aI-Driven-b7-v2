@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm/_relations";
-import { index, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 import { bookings } from "./booking-schema";
 import { technicians } from "./technician-schema";
@@ -8,7 +15,7 @@ export const reviews = pgTable(
   "reviews",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => user.id, {
         onDelete: "cascade",
@@ -28,11 +35,9 @@ export const reviews = pgTable(
       }),
     rating: integer("rating").notNull(),
     comment: text("comment"),
-    createdAt: timestamp("created_at", { mode: "date" })
-      .defaultNow()
-      .notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (table) => [index("reviews_technician_id_idx").on(table.technicianId)]
+  (table) => [index("reviews_technician_id_idx").on(table.technicianId)],
 );
 
 export const reviewsRelations = relations(reviews, ({ one }) => ({

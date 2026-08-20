@@ -6,8 +6,9 @@ import {
   doublePrecision,
   text,
 } from "drizzle-orm/pg-core";
-import { bookings, statusEnum } from "./booking-schema";
+import { bookings } from "./booking-schema";
 import { relations } from "drizzle-orm/_relations";
+import { statusEnum } from "./enums";
 
 export const paymentStatusEnum = pgEnum("payment_status", [
   "pending",
