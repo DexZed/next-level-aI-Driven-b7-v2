@@ -29,23 +29,24 @@ function ProfilePage() {
       isAvailable: true,
     },
   });
-  async function submitHandler(data: ProfileSchema) {}
+  async function submitHandler(data: ProfileSchema) {
+    console.log(data);
+  }
   return (
     <div className="hero bg-base-200 min-h-screen">
       <div className="hero-content text-center">
-        <div className="max-w-md">
+        <div className="max-w-md flex flex-col items-center justify-center">
           <div>
             <h1 className="text-5xl font-bold">Update Your Profile</h1>
           </div>
 
-          <div className="m-5">
-            <form onSubmit={handleSubmit(submitHandler)} className="w-125">
+          <div className="m-5i">
+            <form onSubmit={handleSubmit(submitHandler)}>
               <Input
                 name="firstName"
                 type="text"
                 placeholder="First Name"
                 props={register("firstName")}
-                inputClass="input input-bordered input-info"
                 children={
                   errors.firstName && (
                     <span className="label text-red-500">
@@ -108,7 +109,7 @@ function ProfilePage() {
                   Avaliable
                 </label>
               </fieldset>
-              <button type="submit" className="btn btn-neutral mt-4">
+              <button type="submit" className="btn btn-neutral mt-4 w-full">
                 Update
               </button>
             </form>

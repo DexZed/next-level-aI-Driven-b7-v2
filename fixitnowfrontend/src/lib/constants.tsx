@@ -22,11 +22,6 @@ export const technicianSidebarLinks = [
   },
   { name: "Profile", path: "/technician/profile", icon: <UserPen size={15} /> },
   {
-    name: "Manage Schedule",
-    path: "/technician/schedule",
-    icon: <CalendarCheck size={15} />,
-  },
-  {
     name: "Booking Management",
     path: "/technician/booking",
     icon: <BookCopy size={15} />,

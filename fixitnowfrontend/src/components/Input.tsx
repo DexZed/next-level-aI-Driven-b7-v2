@@ -1,10 +1,13 @@
+import { cn } from "@/lib/tailwindMerge";
+
 type Props = {
   name: string;
   type: string;
-  placeholder: string;
+  placeholder?: string;
   props: any;
-  inputClass: string;
+  inputClass?: string;
   children: React.ReactNode;
+  fieldsetStyle?: string;
 };
 
 function Input({
@@ -14,9 +17,10 @@ function Input({
   props,
   inputClass,
   children,
+  fieldsetStyle,
 }: Props) {
   return (
-    <fieldset className="fieldset">
+    <fieldset className={cn("fieldset", fieldsetStyle)}>
       <label className="label" htmlFor={name}>
         {name}
       </label>
@@ -24,7 +28,7 @@ function Input({
         type={type}
         id={name}
         {...props}
-        className={inputClass}
+        className={cn("input input-bordered input-info", inputClass)}
         placeholder={placeholder}
       />
       {children}
