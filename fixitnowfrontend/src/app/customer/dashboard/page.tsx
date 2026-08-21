@@ -1,10 +1,9 @@
 import { SkeletonHero, SkeletonCards } from "@/components/skeletons";
-import getUserSession from "@/lib/dal";
 import { Suspense } from "react";
-import TechStats from "./_components/techStats";
-import UpcomingJobsComponent from "./_components/upcoming";
-import PendingJobsComponent from "./_components/pending";
+import BookingHistory from "../_components/bookingHsitory";
+import PaymentHistory from "../_components/paymentHistory";
 
+type Props = {};
 async function UserData() {
   // const data = await getUserSession();
   return (
@@ -13,12 +12,12 @@ async function UserData() {
         Welcome,
         {/* {data?.user?.name} */}
       </h1>
-      <p className="py-6">Here's what's happening with your work today.</p>
+      <p className="py-6">How may we help you today.</p>
     </>
   );
 }
 
-function TechnicianDashboard() {
+function CustomerDashboard({}: Props) {
   return (
     <div>
       <div className="hero bg-base-200 h-50">
@@ -30,18 +29,20 @@ function TechnicianDashboard() {
           </div>
         </div>
       </div>
-      <TechStats />
+
       <div className="flex justify-center items-center gap-5">
-        <UpcomingJobsComponent />
-        <PendingJobsComponent />
+        {"Unused Section"}
       </div>
       <div className="hero w-full mt-5">
         <Suspense fallback={SkeletonCards(4)}>
-          <div className="flex flex-wrap  justify-center items-center gap-4"></div>
+          <div className="flex flex-wrap  justify-center items-center gap-4">
+            <BookingHistory />
+            <PaymentHistory />
+          </div>
         </Suspense>
       </div>
     </div>
   );
 }
 
-export default TechnicianDashboard;
+export default CustomerDashboard;

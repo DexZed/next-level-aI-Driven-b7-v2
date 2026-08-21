@@ -34,14 +34,4 @@ export const customerSidebarLinks = [
     path: "/customer/dashboard",
     icon: <House size={15} />,
   },
-  {
-    name: "Booking History",
-    path: "/customer/bookings",
-    icon: <BookX size={15} />,
-  },
-  {
-    name: "Payment History",
-    path: "/customer/payments",
-    icon: <ClipboardClock size={15} />,
-  },
 ];
