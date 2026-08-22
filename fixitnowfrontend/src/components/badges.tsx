@@ -21,19 +21,61 @@ type BadgeTypes = {
 function badges(type: BadgeTypes, content: BadgeTypes) {
   switch (type.kind) {
     case "requested":
-      return <></>;
+      return (
+        <>
+          <div className="badge badge-outline badge-warning">
+            {content.content}
+          </div>
+        </>
+      );
     case "accepted":
-      return <></>;
+      return (
+        <>
+          <div className="badge badge-outline badge-primary">
+            {content.content}
+          </div>
+        </>
+      );
     case "declined":
-      return <></>;
+      return (
+        <>
+          <div className="badge badge-outline badge-error">
+            {content.content}
+          </div>
+        </>
+      );
     case "paid":
-      return <></>;
+      return (
+        <>
+          <div className="badge badge-outline badge-soft badge-primary">
+            {content.content}
+          </div>
+        </>
+      );
     case "in_progress":
-      return <></>;
+      return (
+        <>
+          <div className="badge badge-outline badge-soft badge-accent">
+            {content.content}
+          </div>
+        </>
+      );
     case "completed":
-      return <></>;
+      return (
+        <>
+          <div className="badge badge-outline badge-neutral">
+            {content.content}
+          </div>
+        </>
+      );
     case "cancelled":
-      return <></>;
+      return (
+        <>
+          <div className="badge badge-outline badge-ghost">
+            {content.content}
+          </div>
+        </>
+      );
     default:
       break;
   }

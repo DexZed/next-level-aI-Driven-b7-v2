@@ -1,18 +1,18 @@
-import getUserSession from "@/lib/dal";
 import { Suspense } from "react";
 import UsersCard from "./_components/users-card";
 import BookingsCard from "./_components/bookings-card";
 import PaymentsCard from "./_components/payments-card";
 import { SkeletonHero, SkeletonCards } from "@/components/skeletons";
+import { getSession } from "@/app/data access layer/session";
 
 async function UserData() {
-  const data = await getUserSession();
+  const data = await getSession("admin");
   return (
     <>
       <h1 className="text-5xl font-bold">Welcome</h1>
       <p className="py-6">
-        <span className="font-bold text-lg">{data?.user?.name}</span> You are
-        logged in as {data?.user?.role}
+        <span className="font-bold text-lg">{data.name}</span> You are logged in
+        as {data.role}
       </p>
     </>
   );

@@ -34,7 +34,7 @@ function SignInPage() {
   const router = useRouter();
 
   const submitHandler = async (data: SignInSchema) => {
-    await authClient.signIn.email(
+    const { data: result } = await authClient.signIn.email(
       {
         email: data.email,
         password: data.password,
@@ -42,7 +42,6 @@ function SignInPage() {
       {
         onSuccess: () => {
           toast.success("User logged in successfully");
-          router.push("/");
         },
         onError: (error) => {
           toast.error("Error logging in user");
@@ -53,6 +52,9 @@ function SignInPage() {
         },
       },
     );
+    if (result?.user) {
+      router.push(`/${result?.user?.role}/dashboard`);
+    }
   };
 
   return (

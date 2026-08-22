@@ -1,8 +1,10 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 
 export default function Navbar() {
+  const session = authClient.useSession();
   const links = [
     { href: "/", label: "Home" },
     { href: "/explore", label: "Explore" },
@@ -54,12 +56,21 @@ export default function Navbar() {
           </ul>
         </div>
         <div className="navbar-end flex gap-2">
-          <Link
-            href={"/auth/login"}
-            className="btn btn-outline rounded-md btn-accent"
-          >
-            Login
-          </Link>
+          {session?.data?.user ? (
+            <button
+              onClick={() => authClient.signOut()}
+              className="btn btn-outline rounded-md btn-error"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              href={"/auth/login"}
+              className="btn btn-outline rounded-md btn-accent"
+            >
+              Login
+            </Link>
+          )}
 
           <Link
             href={"/auth/register"}
