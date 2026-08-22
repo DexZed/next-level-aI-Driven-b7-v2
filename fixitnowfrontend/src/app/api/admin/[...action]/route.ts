@@ -1,12 +1,11 @@
 import { db } from "@/drizzle";
 import { user } from "@/drizzle/schemas/auth-schema";
 import { bookings } from "@/drizzle/schemas/booking-schema";
-import { categories } from "@/drizzle/schemas/category-schema";
 import { services } from "@/drizzle/schemas/service-schema";
 import { assertUnreachable } from "../../_lib/utils";
 import { payments } from "@/drizzle/schemas/payments-schema";
 
-type AdminSegment = "allUsers" | "bookings" | "revenue";
+type AdminSegment = "allusers" | "bookings" | "revenue";
 
 type Route = {
   req: Request;
@@ -16,8 +15,9 @@ type Route = {
 
 type RouteHandler = (route: Route) => Promise<Response>;
 
+// Keys must be lowercase to match rawSegment.toLowerCase()
 const routes: Record<AdminSegment, RouteHandler> = {
-  allUsers: async () => {
+  allusers: async () => {
     const users = await db.select().from(user);
     return Response.json(users);
   },
@@ -30,29 +30,32 @@ const routes: Record<AdminSegment, RouteHandler> = {
     return Response.json(allPayments);
   },
 };
+
 export async function All(
   req: Request,
-  { params }: { params: { action: string[] } },
+  { params }: { params: Promise<{ action: string[] }> },
 ) {
-  const segments = params.action || [];
-  const rawSegment = (segments[0] || "").toLowerCase();
+  const { action = [] } = await params;
+  const rawSegment = (action[0] || "").toLowerCase();
+
   try {
     let body: Record<string, any> = {};
-    if (["GET", "POST"].includes(req.method)) {
+    if (["POST", "PUT", "PATCH", "GET"].includes(req.method)) {
       body = await req.json().catch(() => ({}));
     }
 
     if (rawSegment in routes) {
       const segment = rawSegment as AdminSegment;
       switch (segment) {
-        case "allUsers":
+        case "allusers":
         case "bookings":
         case "revenue":
-          return await routes[segment]({ req, params: segments, body });
+          return await routes[segment]({ req, params: action, body });
         default:
           assertUnreachable(segment);
       }
     }
+
     return Response.json(
       {
         success: false,
@@ -70,4 +73,5 @@ export async function All(
     );
   }
 }
+
 export { All as GET, All as POST };

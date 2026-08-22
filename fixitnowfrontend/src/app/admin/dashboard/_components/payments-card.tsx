@@ -1,18 +1,20 @@
+import { getAllRevenue } from "@/app/data access layer/admin";
 import StatusCards from "@/components/statusCards";
-import { getPayments } from "@/lib/dal";
 
 type Props = {};
 
 async function PaymentsCard({}: Props) {
-  // const payments = await getPayments();
+  const payments = await getAllRevenue();
+  console.log(payments);
+  const total = payments.reduce(
+    (acc: number, payment: { amount: number }) => acc + payment.amount,
+    0,
+  );
   return (
     <>
       <StatusCards
         title="Total Payments"
-        data={
-          /* {payments.length} */
-          5000
-        }
+        data={total.toString()}
         desc="30% more than last month"
       />
     </>
