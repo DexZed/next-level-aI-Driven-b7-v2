@@ -17,7 +17,7 @@ export default async function proxy(req: NextRequest) {
   const status = (session?.user as any)?.status;
 
   if (session && status === "banned") {
-    return NextResponse.redirect(new URL("/auth/login?error=banned", req.url));
+    return NextResponse.redirect(new URL("/auth/banned", req.url));
   }
 
   const redirectToLogin = () => {
