@@ -1,51 +1,97 @@
 "use server";
 
-import { env } from "@/lib/config";
+import { db } from "@/drizzle";
+import { user } from "@/drizzle/schemas/auth-schema";
+import { categories } from "@/drizzle/schemas/category-schema";
+import { services } from "@/drizzle/schemas/service-schema";
+import { bookings } from "@/drizzle/schemas/booking-schema";
+import { payments } from "@/drizzle/schemas/payments-schema";
 import { getSession } from "./session";
-import { cacheLife, cacheTag } from "next/cache";
+import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 
 export async function getAllUsers() {
   await getSession("admin");
-  return getAllUsersCached();
+  return db.select().from(user).orderBy(desc(user.createdAt));
 }
 
-async function getAllUsersCached() {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("admin-all-users");
+export async function getUsersWithFilters(params: {
+  search?: string;
+  role?: string;
+  page?: number;
+  limit?: number;
+}) {
+  await getSession("admin");
+  const { search = "", role = "all", page = 1, limit = 10 } = params;
 
-  const result = await fetch(`${env.BASE_URL}/api/admin/allusers`);
+  const conditions = [];
 
-  const data = await result.json();
-  return data;
+  if (search.trim()) {
+    const pattern = `%${search.trim()}%`;
+    conditions.push(
+      or(ilike(user.name, pattern), ilike(user.email, pattern))
+    );
+  }
+
+  if (role && role !== "all") {
+    conditions.push(eq(user.role, role as "admin" | "customer" | "technician"));
+  }
+
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+  const [countResult] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(user)
+    .where(whereClause);
+
+  const total = countResult?.count ?? 0;
+  const offset = (page - 1) * limit;
+
+  const usersList = await db
+    .select()
+    .from(user)
+    .where(whereClause)
+    .orderBy(desc(user.createdAt))
+    .limit(limit)
+    .offset(offset);
+
+  return {
+    users: usersList,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit) || 1,
+  };
 }
+
 export async function getAllBookings() {
   await getSession("admin");
-  return getAllBookingsCached();
+  return db.select().from(bookings).orderBy(desc(bookings.createdAt));
 }
 
-async function getAllBookingsCached() {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("admin-all-Bookings");
-
-  const result = await fetch(`${env.BASE_URL}/api/admin/bookings`);
-
-  const data = await result.json();
-  return data;
-}
 export async function getAllRevenue() {
   await getSession("admin");
-  return getAllRevenueCached();
+  return db.select().from(payments);
 }
 
-async function getAllRevenueCached() {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("admin-all-revenue");
+export async function getAllCategories() {
+  await getSession("admin");
+  return db.select().from(categories).orderBy(categories.name);
+}
 
-  const result = await fetch(`${env.BASE_URL}/api/admin/revenue`);
+export async function getAllServices() {
+  await getSession("admin");
+  const serviceList = await db
+    .select({
+      id: services.id,
+      name: services.name,
+      description: services.description,
+      categoryId: services.categoryId,
+      isActive: services.isActive,
+      categoryName: categories.name,
+    })
+    .from(services)
+    .leftJoin(categories, eq(services.categoryId, categories.id))
+    .orderBy(services.name);
 
-  const data = await result.json();
-  return data;
+  return serviceList;
 }
