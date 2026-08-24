@@ -1,123 +1,55 @@
-"use client";
-import { useState } from "react";
+import { Suspense } from "react";
+import { getUsersWithFilters } from "@/app/data access layer/admin";
+import UsersTable from "./_components/users-table";
+import { SkeletonCards } from "@/components/skeletons";
 
-type Props = {};
+type Props = {
+  searchParams: Promise<{
+    search?: string;
+    role?: string;
+    page?: string;
+    limit?: string;
+  }>;
+};
 
-function UsersPage({}: Props) {
-  const mockUsers = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "[EMAIL_ADDRESS]",
-      role: "admin",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      email: "[EMAIL_ADDRESS]",
-      role: "user",
-      status: "inactive",
-    },
-    {
-      id: 3,
-      name: "Bob Smith",
-      email: "[EMAIL_ADDRESS]",
-      role: "user",
-      status: "active",
-    },
-  ];
-  const [mockUserState, setMockUserState] = useState<any>(mockUsers);
-  function handleUserAction(
-    id: number,
-    action: "activate" | "deactivate" | "delete",
-  ) {
-    switch (action) {
-      case "activate":
-        setMockUserState((prev: any) =>
-          prev.map((user: any) =>
-            user.id === id ? { ...user, status: "active" } : user,
-          ),
-        );
-        break;
-      case "deactivate":
-        setMockUserState((prev: any) =>
-          prev.map((user: any) =>
-            user.id === id ? { ...user, status: "inactive" } : user,
-          ),
-        );
-        break;
-      case "delete":
-        setMockUserState((prev: any) =>
-          prev.filter((user: any) => user.id !== id),
-        );
-        break;
-    }
-  }
+async function UsersContent({ searchParams }: Props) {
+  const resolvedParams = await searchParams;
+  const search = resolvedParams.search || "";
+  const role = resolvedParams.role || "all";
+  const page = parseInt(resolvedParams.page || "1", 10);
+  const limit = parseInt(resolvedParams.limit || "10", 10);
+
+  const data = await getUsersWithFilters({
+    search,
+    role,
+    page: isNaN(page) ? 1 : page,
+    limit: isNaN(limit) ? 10 : limit,
+  });
 
   return (
-    <div>
-      <div className="">
-        <table className="table">
-          {/* head */}
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockUserState.map((u: any, i: number) => (
-              <tr key={i} className="hover:bg-base-300">
-                <th>{i + 1}</th>
-                <td>{u.name}</td>
-                <td>{u.email}</td>
-                <td>{u.role}</td>
-
-                <td>
-                  <div className="dropdown dropdown-hover">
-                    <div tabIndex={0} role="button" className="btn m-1">
-                      Actions
-                    </div>
-                    <ul
-                      tabIndex={-1}
-                      className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
-                    >
-                      <li>
-                        {u.status === "active" ? (
-                          <button
-                            onClick={() => handleUserAction(u.id, "deactivate")}
-                          >
-                            Deactivate
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleUserAction(u.id, "activate")}
-                          >
-                            Activate
-                          </button>
-                        )}
-                      </li>
-                      <li>
-                        <button
-                          onClick={() => handleUserAction(u.id, "delete")}
-                        >
-                          Delete
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <UsersTable
+      initialData={data}
+      currentSearch={search}
+      currentRole={role}
+    />
   );
 }
 
-export default UsersPage;
+export default function UsersPage({ searchParams }: Props) {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">User Management</h1>
+          <p className="text-sm opacity-70 mt-1">
+            View, search, filter, and manage permissions and access status for all platform users.
+          </p>
+        </div>
+      </div>
+
+      <Suspense fallback={SkeletonCards(3)}>
+        <UsersContent searchParams={searchParams} />
+      </Suspense>
+    </div>
+  );
+}
