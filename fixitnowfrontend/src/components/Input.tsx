@@ -6,7 +6,7 @@ type Props = {
   placeholder?: string;
   props: any;
   inputClass?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   fieldsetStyle?: string;
 };
 

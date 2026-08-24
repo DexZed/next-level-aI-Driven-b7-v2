@@ -2,14 +2,15 @@
 
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function Navbar() {
   const session = authClient.useSession();
   const links = [
     { href: "/", label: "Home" },
-    { href: "/explore", label: "Explore" },
-    { href: "/services", label: "Services" },
-    { href: "/technicians", label: "Technicians" },
+
+    { href: "/public/services", label: "Services" },
+    { href: "/public/profile/1", label: "Technicians" },
   ];
   return (
     <>
@@ -58,26 +59,30 @@ export default function Navbar() {
         <div className="navbar-end flex gap-2">
           {session?.data?.user ? (
             <button
-              onClick={() => authClient.signOut()}
+              onClick={async () => {
+                await authClient.signOut();
+                redirect("/auth/login");
+              }}
               className="btn btn-outline rounded-md btn-error"
             >
               Logout
             </button>
           ) : (
-            <Link
-              href={"/auth/login"}
-              className="btn btn-outline rounded-md btn-accent"
-            >
-              Login
-            </Link>
+            <>
+              <Link
+                href={"/auth/login"}
+                className="btn btn-outline rounded-md btn-accent"
+              >
+                Login
+              </Link>
+              <Link
+                href={"/auth/register"}
+                className="btn btn-primary btn-outline rounded-md"
+              >
+                Sign Up
+              </Link>
+            </>
           )}
-
-          <Link
-            href={"/auth/register"}
-            className="btn btn-primary btn-outline rounded-md"
-          >
-            Sign Up
-          </Link>
         </div>
       </div>
     </>

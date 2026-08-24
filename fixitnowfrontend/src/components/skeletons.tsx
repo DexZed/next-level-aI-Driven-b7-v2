@@ -27,3 +27,31 @@ export function SkeletonHero() {
     </div>
   );
 }
+export function SkeletonAccordian() {
+  return (
+    <>
+      <details
+        className="skeleton collapse bg-base-100 border border-base-300 w-full"
+        name="my-accordion-det-1"
+        open
+      >
+        <summary className="skeleton collapse-title font-semibold w-96"></summary>
+        <div className="skeleton collapse-content text-sm w-70"></div>
+      </details>
+      <details
+        className="skeleton collapse bg-base-100 border border-base-300 w-full"
+        name="my-accordion-det-1"
+      >
+        <summary className="skeleton collapse-title font-semibold w-96"></summary>
+        <div className="skeleton collapse-content text-sm w-70"></div>
+      </details>
+      <details
+        className="skeleton collapse bg-base-100 border border-base-300 w-full"
+        name="my-accordion-det-1"
+      >
+        <summary className="skeleton collapse-title font-semibold w-96"></summary>
+        <div className="skeleton collapse-content text-sm w-70"></div>
+      </details>
+    </>
+  );
+}
