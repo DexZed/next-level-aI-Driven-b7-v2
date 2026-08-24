@@ -33,7 +33,7 @@ All admin actions and data access queries are guarded by an administrative sessi
 
 ## 3. Admin Data Access Layer (Queries)
 
-These functions fetch data securely from the PostgreSQL database using Drizzle ORM under admin permissions.
+These functions fetch data securely from the PostgreSQL database using Drizzle ORM under admin permissions. Location : **src/app/data access layer/admin.ts**
 
 | Function Name         | Parameters                                  | Description                                                                                                                  |
 | --------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -48,7 +48,7 @@ These functions fetch data securely from the PostgreSQL database using Drizzle O
 
 ## 4. Admin Page-Level Actions (Mutations)
 
-These server actions handle data mutations (Create, Update, Delete, Toggle Status) and automatically trigger cache revalidation via Next.js `revalidatePath`.
+These server actions handle data mutations (Create, Update, Delete, Toggle Status) and automatically trigger cache revalidation via Next.js `revalidatePath`. Location : **src/app/admin/actions.ts**
 
 ### **User Management Actions**
 
@@ -100,7 +100,7 @@ These server actions handle data mutations (Create, Update, Delete, Toggle Statu
 
 ## 5. Technician Data Access Layer (`technician`)
 
-Technician queries are secured using `getSession("technician")`. They automatically handle profile provisioning via an upsert pattern (`getOrCreateTechnicianProfile`).
+Technician queries are secured using `getSession("technician")`. They automatically handle profile provisioning via an upsert pattern (`getOrCreateTechnicianProfile`). Location : **src/app/data access layer/technician.ts**
 
 | Function Name                  | Parameters                                    | Description                                                                                                                                        |
 | ------------------------------ | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -113,7 +113,7 @@ Technician queries are secured using `getSession("technician")`. They automatica
 
 ## 6. Technician Page-Level Actions (Mutations)
 
-These server actions handle profile management, pricing modifications for specialized services, and booking status transitions.
+These server actions handle profile management, pricing modifications for specialized services, and booking status transitions. Location : **src/app/technician/actions.ts**
 
 ### **Profile Management Actions**
 
@@ -145,7 +145,7 @@ These server actions handle profile management, pricing modifications for specia
 
 ## 7. Customer Data Access Layer (`customer`)
 
-Customer queries are validated using `getSession("customer")`. They provide secure access to user dashboards, booking lists, payment logs, and public catalog data.
+Customer queries are validated using `getSession("customer")`. They provide secure access to user dashboards, booking lists, payment logs, and public catalog data. Location : **src/app/data access layer/customer.ts**
 
 | Function Name                     | Parameters                         | Description                                                                                                                     |
 | --------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -162,7 +162,7 @@ Customer queries are validated using `getSession("customer")`. They provide secu
 
 ## 8. Customer Page-Level Actions (Mutations & Workflows)
 
-These server actions handle booking creation, anti-conflict scheduling validation, Stripe checkout sessions, payment confirmation callbacks, and reviews.
+These server actions handle booking creation, anti-conflict scheduling validation, Stripe checkout sessions, payment confirmation callbacks, and reviews. Location : **src/app/customer/actions.ts**
 
 ### **Booking & Scheduling Workflow**
 
