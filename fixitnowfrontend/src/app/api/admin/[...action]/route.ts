@@ -15,7 +15,6 @@ type Route = {
 
 type RouteHandler = (route: Route) => Promise<Response>;
 
-// Keys must be lowercase to match rawSegment.toLowerCase()
 const routes: Record<AdminSegment, RouteHandler> = {
   allusers: async () => {
     const users = await db.select().from(user);

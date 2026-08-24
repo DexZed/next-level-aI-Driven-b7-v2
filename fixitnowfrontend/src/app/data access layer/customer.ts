@@ -12,13 +12,9 @@ import { payments } from "@/drizzle/schemas/payments-schema";
 import { reviews } from "@/drizzle/schemas/review-schema";
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 
-/**
- * Fetches data for the Customer Dashboard: bookings, payment history, and reviews.
- */
 export async function getCustomerDashboardData() {
   const customer = await getSession("customer");
 
-  // Fetch Customer Bookings with Technician and Service info
   const customerBookings = await db
     .select({
       id: bookings.id,
@@ -40,7 +36,6 @@ export async function getCustomerDashboardData() {
     .where(eq(bookings.userId, customer.id))
     .orderBy(desc(bookings.createdAt));
 
-  // Fetch Customer Payments
   const customerPayments = await db
     .select({
       id: payments.id,
@@ -58,7 +53,6 @@ export async function getCustomerDashboardData() {
     .where(eq(bookings.userId, customer.id))
     .orderBy(desc(payments.paidAt));
 
-  // Fetch Reviews submitted by this customer
   const customerReviews = await db
     .select({
       id: reviews.id,
@@ -79,23 +73,18 @@ export async function getCustomerDashboardData() {
   };
 }
 
-/**
- * Fetches public services with categories and offering technicians for browse & search.
- */
 export async function getPublicServicesWithCategories(params: {
   search?: string;
   categoryId?: string;
 }) {
   const { search = "", categoryId = "all" } = params;
 
-  // Active Categories
   const allCategories = await db
     .select()
     .from(categories)
     .where(eq(categories.isActive, true))
     .orderBy(categories.name);
 
-  // Active Services query with optional category filter and keyword search
   const conditions = [eq(services.isActive, true)];
 
   if (categoryId && categoryId !== "all") {
@@ -105,7 +94,7 @@ export async function getPublicServicesWithCategories(params: {
   if (search.trim()) {
     const pattern = `%${search.trim()}%`;
     conditions.push(
-      or(ilike(services.name, pattern), ilike(services.description, pattern))!
+      or(ilike(services.name, pattern), ilike(services.description, pattern))!,
     );
   }
 
@@ -122,7 +111,6 @@ export async function getPublicServicesWithCategories(params: {
     .where(and(...conditions))
     .orderBy(services.name);
 
-  // Fetch available technicians offering each service
   const techOfferings = await db
     .select({
       serviceId: technicianServices.serviceId,
@@ -145,11 +133,7 @@ export async function getPublicServicesWithCategories(params: {
   };
 }
 
-/**
- * Fetches detailed public profile for a technician including their services and customer reviews.
- */
 export async function getTechnicianPublicDetails(technicianId: string) {
-  // Find technician by technician id or user id
   const [tech] = await db
     .select({
       id: technicians.id,
@@ -161,15 +145,19 @@ export async function getTechnicianPublicDetails(technicianId: string) {
       name: user.name,
       email: user.email,
       image: user.image,
-      createdAt: technicians.id, // placeholder
+      createdAt: technicians.id,
     })
     .from(technicians)
     .innerJoin(user, eq(technicians.userId, user.id))
-    .where(or(eq(technicians.id, technicianId as any), eq(technicians.userId, technicianId)));
+    .where(
+      or(
+        eq(technicians.id, technicianId as any),
+        eq(technicians.userId, technicianId),
+      ),
+    );
 
   if (!tech) return null;
 
-  // Services offered by this technician
   const offeredServices = await db
     .select({
       id: technicianServices.id,
@@ -184,7 +172,6 @@ export async function getTechnicianPublicDetails(technicianId: string) {
     .leftJoin(categories, eq(services.categoryId, categories.id))
     .where(eq(technicianServices.technicianId, tech.id));
 
-  // Reviews for this technician
   const techReviews = await db
     .select({
       id: reviews.id,
@@ -205,9 +192,6 @@ export async function getTechnicianPublicDetails(technicianId: string) {
   };
 }
 
-/**
- * Fetches a single booking for payment checkout validation.
- */
 export async function getBookingForPayment(bookingId: string) {
   const customer = await getSession("customer");
 
@@ -225,7 +209,9 @@ export async function getBookingForPayment(bookingId: string) {
     .innerJoin(services, eq(bookings.serviceId, services.id))
     .innerJoin(technicians, eq(bookings.technicianId, technicians.id))
     .innerJoin(user, eq(technicians.userId, user.id))
-    .where(and(eq(bookings.id, bookingId as any), eq(bookings.userId, customer.id)));
+    .where(
+      and(eq(bookings.id, bookingId as any), eq(bookings.userId, customer.id)),
+    );
 
   return booking || null;
 }

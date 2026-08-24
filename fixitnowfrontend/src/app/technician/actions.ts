@@ -55,7 +55,10 @@ export async function updateTechnicianProfileAction(data: {
   }
 }
 
-export async function addTechnicianServiceAction(serviceId: string, price: number) {
+export async function addTechnicianServiceAction(
+  serviceId: string,
+  price: number,
+) {
   const tech = await getOrCreateTechnicianProfile();
   const parsed = serviceRateSchema.safeParse({ serviceId, price });
   if (!parsed.success) {
@@ -66,19 +69,21 @@ export async function addTechnicianServiceAction(serviceId: string, price: numbe
   }
 
   try {
-    // Check if already offered
     const [existing] = await db
       .select()
       .from(technicianServices)
       .where(
         and(
           eq(technicianServices.technicianId, tech.id),
-          eq(technicianServices.serviceId, serviceId)
-        )
+          eq(technicianServices.serviceId, serviceId),
+        ),
       );
 
     if (existing) {
-      return { success: false, error: "You already offer this service. You can update its price." };
+      return {
+        success: false,
+        error: "You already offer this service. You can update its price.",
+      };
     }
 
     await db.insert(technicianServices).values({
@@ -99,7 +104,7 @@ export async function addTechnicianServiceAction(serviceId: string, price: numbe
 
 export async function updateTechnicianServicePriceAction(
   id: string,
-  price: number
+  price: number,
 ) {
   const tech = await getOrCreateTechnicianProfile();
   if (price < 0) {
@@ -113,8 +118,8 @@ export async function updateTechnicianServicePriceAction(
       .where(
         and(
           eq(technicianServices.id, id),
-          eq(technicianServices.technicianId, tech.id)
-        )
+          eq(technicianServices.technicianId, tech.id),
+        ),
       );
 
     revalidatePath("/technician/profile");
@@ -135,8 +140,8 @@ export async function removeTechnicianServiceAction(id: string) {
       .where(
         and(
           eq(technicianServices.id, id),
-          eq(technicianServices.technicianId, tech.id)
-        )
+          eq(technicianServices.technicianId, tech.id),
+        ),
       );
 
     revalidatePath("/technician/profile");
@@ -151,20 +156,23 @@ export async function removeTechnicianServiceAction(id: string) {
 
 export async function updateBookingStatusAction(
   bookingId: string,
-  newStatus: "pending" | "confirmed" | "completed" | "cancelled" | "in_progress" | "declined" | "paid"
+  newStatus:
+    | "pending"
+    | "confirmed"
+    | "completed"
+    | "cancelled"
+    | "in_progress"
+    | "declined"
+    | "paid",
 ) {
   const tech = await getOrCreateTechnicianProfile();
 
   try {
-    // Verify booking belongs to this technician
     const [booking] = await db
       .select()
       .from(bookings)
       .where(
-        and(
-          eq(bookings.id, bookingId),
-          eq(bookings.technicianId, tech.id)
-        )
+        and(eq(bookings.id, bookingId), eq(bookings.technicianId, tech.id)),
       );
 
     if (!booking) {

@@ -34,14 +34,22 @@ function SignInPage() {
   const router = useRouter();
 
   const submitHandler = async (data: SignInSchema) => {
-    const { data: result } = await authClient.signIn.email(
+    authClient.signIn.email(
       {
         email: data.email,
         password: data.password,
       },
       {
-        onSuccess: () => {
+        onSuccess: (ctx) => {
           toast.success("User logged in successfully");
+          const role = ctx.data?.user?.role;
+          if (role === "admin") {
+            router.push("/admin/dashboard");
+          } else if (role === "customer") {
+            router.push("/customer/dashboard");
+          } else if (role === "technician") {
+            router.push("/technician/dashboard");
+          }
         },
         onError: (error) => {
           toast.error("Error logging in user");
@@ -52,9 +60,6 @@ function SignInPage() {
         },
       },
     );
-    if (result?.user) {
-      router.push(`/${result?.user?.role}/dashboard`);
-    }
   };
 
   return (

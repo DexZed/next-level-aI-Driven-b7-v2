@@ -13,7 +13,17 @@ import {
 import { toast } from "react-toastify";
 import Input from "@/components/Input";
 import { useRouter } from "next/navigation";
-import { User, Wrench, Plus, Trash2, Edit2, Check, Star, MapPin, Power } from "lucide-react";
+import {
+  User,
+  Wrench,
+  Plus,
+  Trash2,
+  Edit2,
+  Check,
+  Star,
+  MapPin,
+  Power,
+} from "lucide-react";
 
 const profileSchema = z.object({
   bio: z.string().min(5, "Bio must be at least 5 characters"),
@@ -60,16 +70,18 @@ type Props = {
   allPlatformServices: PlatformService[];
 };
 
-export default function ProfileManager({ technician, myServices, allPlatformServices }: Props) {
+export default function ProfileManager({
+  technician,
+  myServices,
+  allPlatformServices,
+}: Props) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"profile" | "services">("profile");
 
-  // Price editing state
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null);
   const [newPrice, setNewPrice] = useState<number>(0);
   const [isPriceSubmitting, setIsPriceSubmitting] = useState(false);
 
-  // Add service modal state
   const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState<string>("");
   const [servicePriceInput, setServicePriceInput] = useState<string>("50");
@@ -117,7 +129,8 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
   };
 
   const handleRemoveService = async (id: string, serviceName: string) => {
-    if (!confirm(`Are you sure you want to stop offering "${serviceName}"?`)) return;
+    if (!confirm(`Are you sure you want to stop offering "${serviceName}"?`))
+      return;
 
     const res = await removeTechnicianServiceAction(id);
     if (res.success) {
@@ -154,10 +167,9 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
     }
   };
 
-  // Services not yet offered by this technician
   const offeredServiceIds = new Set(myServices.map((s) => s.serviceId));
   const unofferedPlatformServices = allPlatformServices.filter(
-    (s) => !offeredServiceIds.has(s.id)
+    (s) => !offeredServiceIds.has(s.id),
   );
 
   return (
@@ -166,7 +178,9 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
       <div className="tabs tabs-boxed bg-base-100 p-2 shadow-md w-fit">
         <button
           className={`tab gap-2 font-medium ${
-            activeTab === "profile" ? "tab-active !bg-primary !text-primary-content" : ""
+            activeTab === "profile"
+              ? "tab-active !bg-primary !text-primary-content"
+              : ""
           }`}
           onClick={() => setActiveTab("profile")}
         >
@@ -175,7 +189,9 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
         </button>
         <button
           className={`tab gap-2 font-medium ${
-            activeTab === "services" ? "tab-active !bg-primary !text-primary-content" : ""
+            activeTab === "services"
+              ? "tab-active !bg-primary !text-primary-content"
+              : ""
           }`}
           onClick={() => setActiveTab("services")}
         >
@@ -209,9 +225,12 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="opacity-70 flex items-center gap-1">
-                    <Star size={14} className="text-warning fill-warning" /> Rating:
+                    <Star size={14} className="text-warning fill-warning" />{" "}
+                    Rating:
                   </span>
-                  <span className="font-semibold">{technician.ratingAvg.toFixed(1)} / 5.0</span>
+                  <span className="font-semibold">
+                    {technician.ratingAvg.toFixed(1)} / 5.0
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="opacity-70 flex items-center gap-1">
@@ -230,9 +249,14 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
           {/* Edit Form */}
           <div className="card bg-base-100 shadow-md lg:col-span-2">
             <div className="card-body">
-              <h3 className="text-lg font-bold mb-2">Update Professional Details</h3>
+              <h3 className="text-lg font-bold mb-2">
+                Update Professional Details
+              </h3>
 
-              <form onSubmit={handleSubmit(onProfileSubmit)} className="space-y-4">
+              <form
+                onSubmit={handleSubmit(onProfileSubmit)}
+                className="space-y-4"
+              >
                 <Input
                   name="Operating City"
                   type="text"
@@ -240,14 +264,18 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
                   props={register("city")}
                   children={
                     errors.city && (
-                      <span className="label text-red-500">{errors.city.message}</span>
+                      <span className="label text-red-500">
+                        {errors.city.message}
+                      </span>
                     )
                   }
                 />
 
                 <div>
                   <label className="label">
-                    <span className="label-text font-semibold">Professional Bio & Experience</span>
+                    <span className="label-text font-semibold">
+                      Professional Bio & Experience
+                    </span>
                   </label>
                   <textarea
                     placeholder="Describe your background, specialties, and years of experience..."
@@ -256,14 +284,18 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
                     {...register("bio")}
                   />
                   {errors.bio && (
-                    <span className="label text-red-500">{errors.bio.message}</span>
+                    <span className="label text-red-500">
+                      {errors.bio.message}
+                    </span>
                   )}
                 </div>
 
                 <div className="form-control bg-base-200/50 p-4 rounded-box">
                   <label className="label cursor-pointer justify-between">
                     <div>
-                      <span className="label-text font-bold block">Available for New Bookings</span>
+                      <span className="label-text font-bold block">
+                        Available for New Bookings
+                      </span>
                       <span className="text-xs opacity-70 block">
                         When active, customers can find and book your services.
                       </span>
@@ -296,7 +328,9 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
         <div className="space-y-4">
           <div className="flex justify-between items-center bg-base-100 p-4 rounded-box shadow-md">
             <div>
-              <h3 className="font-bold text-base">Offered Services & Custom Rates</h3>
+              <h3 className="font-bold text-base">
+                Offered Services & Custom Rates
+              </h3>
               <p className="text-xs opacity-70">
                 Set and customize the pricing for each service you provide.
               </p>
@@ -336,8 +370,12 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
                 <tbody>
                   {myServices.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="text-center py-10 text-base-content/60">
-                        You haven&apos;t added any services yet. Click &quot;Add Service to Profile&quot; to begin offering services.
+                      <td
+                        colSpan={5}
+                        className="text-center py-10 text-base-content/60"
+                      >
+                        You haven&apos;t added any services yet. Click &quot;Add
+                        Service to Profile&quot; to begin offering services.
                       </td>
                     </tr>
                   ) : (
@@ -352,7 +390,9 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
                           </span>
                         </td>
                         <td className="max-w-xs text-xs opacity-80">
-                          <p className="line-clamp-2">{svc.serviceDescription}</p>
+                          <p className="line-clamp-2">
+                            {svc.serviceDescription}
+                          </p>
                         </td>
                         <td>
                           {editingPriceId === svc.id ? (
@@ -363,7 +403,9 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
                                 step="1"
                                 className="input input-bordered input-sm input-primary w-24"
                                 value={newPrice}
-                                onChange={(e) => setNewPrice(parseFloat(e.target.value) || 0)}
+                                onChange={(e) =>
+                                  setNewPrice(parseFloat(e.target.value) || 0)
+                                }
                                 autoFocus
                               />
                               <button
@@ -402,7 +444,9 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
                         </td>
                         <td className="text-right">
                           <button
-                            onClick={() => handleRemoveService(svc.id, svc.serviceName)}
+                            onClick={() =>
+                              handleRemoveService(svc.id, svc.serviceName)
+                            }
                             className="btn btn-xs btn-ghost text-error"
                             title="Remove Service"
                           >
@@ -429,12 +473,16 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
             >
               ✕
             </button>
-            <h3 className="font-bold text-lg mb-4">Add Service to Your Offerings</h3>
+            <h3 className="font-bold text-lg mb-4">
+              Add Service to Your Offerings
+            </h3>
 
             <form onSubmit={handleAddService} className="space-y-4">
               <div>
                 <label className="label">
-                  <span className="label-text font-semibold">Select Platform Service</span>
+                  <span className="label-text font-semibold">
+                    Select Platform Service
+                  </span>
                 </label>
                 <select
                   className="select select-bordered select-info w-full"
@@ -455,7 +503,9 @@ export default function ProfileManager({ technician, myServices, allPlatformServ
 
               <div>
                 <label className="label">
-                  <span className="label-text font-semibold">Your Custom Rate ($)</span>
+                  <span className="label-text font-semibold">
+                    Your Custom Rate ($)
+                  </span>
                 </label>
                 <input
                   type="number"

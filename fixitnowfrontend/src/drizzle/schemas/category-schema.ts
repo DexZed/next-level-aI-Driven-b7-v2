@@ -2,7 +2,6 @@ import { boolean, pgTable, uuid, text, index } from "drizzle-orm/pg-core";
 import { services } from "./service-schema";
 import { relations } from "drizzle-orm/_relations";
 
-// Categories Table
 export const categories = pgTable(
   "categories",
   {
