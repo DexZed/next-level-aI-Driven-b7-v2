@@ -18,6 +18,11 @@ export const auth = betterAuth({
         type: ["admin", "customer", "technician"],
         required: true,
       },
+      status: {
+        type: ["active", "banned"],
+        required: false,
+        defaultValue: "active",
+      },
     },
   },
   session: {
