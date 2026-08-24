@@ -3,7 +3,7 @@ import Input from "@/components/Input";
 import { authClient } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import z from "zod";
@@ -121,5 +121,11 @@ function SignInPage() {
     </div>
   );
 }
-
-export default SignInPage;
+const SignInSuspenseWrapper = () => {
+  return (
+    <Suspense fallback={<div className="text-white">Loading...</div>}>
+      <SignInPage />
+    </Suspense>
+  );
+};
+export default SignInSuspenseWrapper;
