@@ -1,123 +1,33 @@
-"use client";
-import Input from "@/components/Input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import z from "zod";
+import { Suspense } from "react";
+import { getTechnicianServicesData } from "@/app/data access layer/technician";
+import ProfileManager from "./_components/profile-manager";
+import { SkeletonCards } from "@/components/skeletons";
 
-const profileSchema = z.object({
-  firstName: z.string().min(3, "First Name must be at least 3 characters long"),
-  lastName: z.string().min(3, "Last Name must be at least 3 characters long"),
-  bio: z.string().min(3, "Bio must be at least 3 characters long"),
-  city: z.string().min(1, "City is required"),
-  isAvailable: z.boolean().default(true).optional(),
-});
+async function ProfileContent() {
+  const data = await getTechnicianServicesData();
 
-type ProfileSchema = z.infer<typeof profileSchema>;
-
-function ProfilePage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ProfileSchema>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      bio: "",
-      city: "",
-      isAvailable: true,
-    },
-  });
-  async function submitHandler(data: ProfileSchema) {
-    console.log(data);
-  }
   return (
-    <div className="hero bg-base-200 min-h-screen">
-      <div className="hero-content text-center">
-        <div className="max-w-md flex flex-col items-center justify-center">
-          <div>
-            <h1 className="text-5xl font-bold">Update Your Profile</h1>
-          </div>
-
-          <div className="m-5i">
-            <form onSubmit={handleSubmit(submitHandler)}>
-              <Input
-                name="firstName"
-                type="text"
-                placeholder="First Name"
-                props={register("firstName")}
-                children={
-                  errors.firstName && (
-                    <span className="label text-red-500">
-                      {errors.firstName.message}
-                    </span>
-                  )
-                }
-              />
-              <Input
-                name="lastName"
-                type="text"
-                placeholder="Last Name"
-                props={register("lastName")}
-                inputClass="input input-bordered input-info"
-                children={
-                  errors.lastName && (
-                    <span className="label text-red-500">
-                      {errors.lastName.message}
-                    </span>
-                  )
-                }
-              />
-              <Input
-                name="bio"
-                type="text"
-                placeholder="Bio"
-                props={register("bio")}
-                inputClass="input input-bordered input-info"
-                children={
-                  errors.bio && (
-                    <span className="label text-red-500">
-                      {errors.bio.message}
-                    </span>
-                  )
-                }
-              />
-              <Input
-                name="city"
-                type="text"
-                placeholder="City"
-                props={register("city")}
-                inputClass="input input-bordered input-info"
-                children={
-                  errors.city && (
-                    <span className="label text-red-500">
-                      {errors.city.message}
-                    </span>
-                  )
-                }
-              />
-              <fieldset className="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4">
-                <legend className="fieldset-legend">Set Avalability</legend>
-                <label className="label">
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="checkbox"
-                    {...register("isAvailable")}
-                  />
-                  Avaliable
-                </label>
-              </fieldset>
-              <button type="submit" className="btn btn-neutral mt-4 w-full">
-                Update
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ProfileManager
+      technician={data.technician}
+      myServices={data.myServices}
+      allPlatformServices={data.allPlatformServices}
+    />
   );
 }
 
-export default ProfilePage;
+export default function TechnicianProfilePage() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Profile & Services</h1>
+        <p className="text-sm opacity-70 mt-1">
+          Manage your public profile, set your availability, and configure custom pricing for services you offer.
+        </p>
+      </div>
+
+      <Suspense fallback={SkeletonCards(3)}>
+        <ProfileContent />
+      </Suspense>
+    </div>
+  );
+}
