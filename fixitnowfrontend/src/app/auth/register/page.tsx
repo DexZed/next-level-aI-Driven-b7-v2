@@ -50,9 +50,16 @@ function RegisterPage() {
         role: data.role! as "admin" | "customer" | "technician",
       },
       {
-        onSuccess: () => {
+        onSuccess: (ctx) => {
           toast.success("User created successfully");
-          router.push("/");
+          const role = ctx.data?.user?.role;
+          if (role === "admin") {
+            router.push("/admin/dashboard");
+          } else if (role === "customer") {
+            router.push("/customer/dashboard");
+          } else if (role === "technician") {
+            router.push("/technician/dashboard");
+          }
         },
         onError: (error) => {
           toast.error("Error creating user");

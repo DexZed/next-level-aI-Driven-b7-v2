@@ -2,7 +2,8 @@
 import Input from "@/components/Input";
 import { authClient } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import z from "zod";
@@ -32,6 +33,13 @@ function SignInPage() {
   });
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam === "banned") {
+      toast.error("Your account has been banned. Please contact support.");
+    }
+  }, [searchParams]);
 
   const submitHandler = async (data: SignInSchema) => {
     authClient.signIn.email(
