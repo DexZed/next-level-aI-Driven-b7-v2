@@ -25,7 +25,7 @@ export default async function PaymentSuccessPage({ searchParams }: Props) {
 
   return (
     <div className="hero min-h-[70vh] bg-base-200">
-      <div className="hero-content text-center">
+      {/* <div className="hero-content text-center">
         <div className="card bg-base-100 shadow-xl max-w-md p-6">
           <div className="flex justify-center mb-4">
             <div className="rounded-full bg-success/20 p-4 text-success">
@@ -64,7 +64,7 @@ export default async function PaymentSuccessPage({ searchParams }: Props) {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
