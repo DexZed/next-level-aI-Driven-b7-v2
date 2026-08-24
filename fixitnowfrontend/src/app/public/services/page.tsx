@@ -18,7 +18,11 @@ function ServicePage({}: Props) {
           </div>
         </div>
       </div>
-
+      <div className="my-5">
+        <h2 className="text-center text-2xl font-bold">
+          Features Not Added yet
+        </h2>
+      </div>
       <div className="flex justify-center items-center gap-5 bg-base-300">
         <div className="m-5">
           <label className="input">
