@@ -38,6 +38,7 @@ function SignInPage() {
     const errorParam = searchParams.get("error");
     if (errorParam === "banned") {
       toast.error("Your account has been banned. Please contact support.");
+      authClient.signOut();
     }
   }, [searchParams]);
 
