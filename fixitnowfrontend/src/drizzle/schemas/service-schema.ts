@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, boolean, index } from "drizzle-orm/pg-core";
 import { categories } from "./category-schema";
 import { relations } from "drizzle-orm/_relations";
 import { bookings } from "./booking-schema";
@@ -17,6 +17,7 @@ export const services = pgTable(
         onDelete: "cascade",
         onUpdate: "cascade",
       }),
+    isActive: boolean("is_active").default(true).notNull(),
   },
   (table) => [
     index("services_name_idx").on(table.name),

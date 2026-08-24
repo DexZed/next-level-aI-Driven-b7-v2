@@ -6,4 +6,6 @@ export const statusEnum = pgEnum("status", [
   "completed",
   "cancelled",
   "in_progress",
+  "declined",
+  "paid",
 ]);
