@@ -2,6 +2,8 @@
 
 This document provides a comprehensive overview of the authentication setup, data access layer, and administrative server actions for the application.
 
+## _The live link of the backend url provided uses the link from the previous assignment 4. This Frontend uses server actions rather than than standard API routes so there maybe mismatch of the old routes and the newer ones._
+
 ---
 
 ## 1. Authentication Layer (`Better Auth`)
