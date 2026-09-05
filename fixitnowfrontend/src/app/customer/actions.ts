@@ -53,7 +53,6 @@ export async function createBookingAction(data: {
   }
 
   try {
-    // 1. Verify technician offers this service & get customized price
     const [offering] = await db
       .select({
         price: technicianServices.price,
@@ -86,7 +85,6 @@ export async function createBookingAction(data: {
       };
     }
 
-    // 2. Double-booking conflict validation (±45 minutes buffer)
     const bufferMs = 45 * 60 * 1000;
     const windowStart = new Date(scheduledDate.getTime() - bufferMs);
     const windowEnd = new Date(scheduledDate.getTime() + bufferMs);
@@ -111,7 +109,6 @@ export async function createBookingAction(data: {
       };
     }
 
-    // 3. Insert Booking
     const [newBooking] = await db
       .insert(bookings)
       .values({
@@ -142,9 +139,6 @@ export async function createBookingAction(data: {
   }
 }
 
-/**
- * Cancels a booking before the job is started.
- */
 export async function cancelBookingAction(bookingId: string) {
   const customer = await getSession("customer");
 
@@ -193,9 +187,6 @@ export async function cancelBookingAction(bookingId: string) {
   }
 }
 
-/**
- * Creates a Stripe Checkout Session for an accepted booking.
- */
 export async function createStripeCheckoutAction(bookingId: string) {
   const customer = await getSession("customer");
   const headerList = await headers();
@@ -244,7 +235,7 @@ export async function createStripeCheckoutAction(bookingId: string) {
               name: `FixItNow: ${booking.serviceName}`,
               description: `Booking reference: ${booking.id.slice(0, 8)}`,
             },
-            unit_amount: amountInCents > 0 ? amountInCents : 1000, // min $10 if 0
+            unit_amount: amountInCents > 0 ? amountInCents : 1000,
           },
           quantity: 1,
         },
@@ -269,9 +260,6 @@ export async function createStripeCheckoutAction(bookingId: string) {
   }
 }
 
-/**
- * Confirms payment from Stripe callback and transitions booking to PAID.
- */
 export async function confirmStripePaymentAction(
   sessionId: string,
   bookingId: string,
@@ -280,7 +268,6 @@ export async function confirmStripePaymentAction(
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.payment_status === "paid") {
-      // Check if payment record already inserted
       const [existingPayment] = await db
         .select()
         .from(payments)
@@ -292,12 +279,11 @@ export async function confirmStripePaymentAction(
           amount: (session.amount_total || 0) / 100,
           method: "card",
           provider: "STRIPE",
-          status: "confirmed", // mapped from statusEnum
+          status: "confirmed",
           paidAt: new Date(),
         });
       }
 
-      // Update booking to paid
       await db
         .update(bookings)
         .set({ status: "paid", updatedAt: new Date() })
@@ -319,9 +305,6 @@ export async function confirmStripePaymentAction(
   }
 }
 
-/**
- * Submits a customer review for a completed booking and updates technician rating average.
- */
 export async function submitReviewAction(data: {
   bookingId: string;
   technicianId: string;
@@ -338,7 +321,6 @@ export async function submitReviewAction(data: {
   }
 
   try {
-    // 1. Verify booking is completed and belongs to customer
     const [booking] = await db
       .select()
       .from(bookings)
@@ -360,7 +342,6 @@ export async function submitReviewAction(data: {
       };
     }
 
-    // 2. Check if already reviewed
     const [existing] = await db
       .select()
       .from(reviews)
@@ -373,7 +354,6 @@ export async function submitReviewAction(data: {
       };
     }
 
-    // 3. Insert review
     await db.insert(reviews).values({
       userId: customer.id,
       technicianId: parsed.data.technicianId as any,
@@ -381,8 +361,6 @@ export async function submitReviewAction(data: {
       rating: parsed.data.rating,
       comment: parsed.data.comment || "",
     });
-
-    // 4. Recalculate average rating for technician
     const [avgResult] = await db
       .select({ avgRating: avg(reviews.rating) })
       .from(reviews)
@@ -406,10 +384,6 @@ export async function submitReviewAction(data: {
     };
   }
 }
-/**
- * Get the all the booking made by this customer ordered by latest to oldest
- */
-
 export async function getCustomerBookingHistory() {
   const customer = await getSession("customer");
   const bookingData = await db
@@ -419,9 +393,6 @@ export async function getCustomerBookingHistory() {
     .orderBy(desc(bookings.createdAt));
   return bookingData;
 }
-/**
- * Get the all the payments made by this customer ordered by latest to oldest
- */
 export async function getCustomerPaymentHistory() {
   const customer = await getSession("customer");
   const paymentData = await db
@@ -432,9 +403,7 @@ export async function getCustomerPaymentHistory() {
     .orderBy(desc(payments.paidAt));
   return paymentData;
 }
-/**
- * Get the all the technicians
- */
+
 export async function getAvailableTechnicians() {
   const technicianData = await db.select().from(technicianServices);
 

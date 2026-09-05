@@ -25,7 +25,6 @@ export async function getOrCreateTechnicianProfile() {
     return { ...existing, user: sessionUser };
   }
 
-  // Create default technician record if not yet created
   const [created] = await db
     .insert(technicians)
     .values({
@@ -63,21 +62,20 @@ export async function getTechnicianDashboardData() {
     .where(eq(bookings.technicianId, tech.id))
     .orderBy(desc(bookings.scheduledAt));
 
-  const pendingJobs = allTechBookings.filter(
-    (b) => b.status === "pending"
-  );
+  const pendingJobs = allTechBookings.filter((b) => b.status === "pending");
 
   const upcomingJobs = allTechBookings.filter(
-    (b) => b.status === "confirmed" || b.status === "in_progress" || b.status === "paid"
+    (b) =>
+      b.status === "confirmed" ||
+      b.status === "in_progress" ||
+      b.status === "paid",
   );
 
-  const completedJobs = allTechBookings.filter(
-    (b) => b.status === "completed"
-  );
+  const completedJobs = allTechBookings.filter((b) => b.status === "completed");
 
   const totalEarnings = completedJobs.reduce(
     (acc, job) => acc + (job.totalPrice || 0),
-    0
+    0,
   );
 
   return {
@@ -114,7 +112,7 @@ export async function getTechnicianBookings(params: {
   if (search.trim()) {
     const pattern = `%${search.trim()}%`;
     conditions.push(
-      or(ilike(user.name, pattern), ilike(services.name, pattern))!
+      or(ilike(user.name, pattern), ilike(services.name, pattern))!,
     );
   }
 
@@ -182,7 +180,6 @@ export async function getTechnicianServicesData() {
     .where(eq(technicianServices.technicianId, tech.id))
     .orderBy(services.name);
 
-  // All available platform services
   const allPlatformServices = await db
     .select({
       id: services.id,

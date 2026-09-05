@@ -2,7 +2,17 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, MapPin, Star, User, DollarSign, Tag, CheckCircle2, ChevronRight, Briefcase } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Star,
+  User,
+  DollarSign,
+  Tag,
+  CheckCircle2,
+  ChevronRight,
+  Briefcase,
+} from "lucide-react";
 
 type Category = {
   id: string;
@@ -35,12 +45,15 @@ type Props = {
   techOfferings: TechOffering[];
 };
 
-export default function ServicesCatalog({ categories, services, techOfferings }: Props) {
+export default function ServicesCatalog({
+  categories,
+  services,
+  techOfferings,
+}: Props) {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [cityFilter, setCityFilter] = useState<string>("all");
 
-  // Extract unique cities
   const cities = useMemo(() => {
     const set = new Set<string>();
     techOfferings.forEach((t) => {
@@ -49,7 +62,6 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
     return Array.from(set);
   }, [techOfferings]);
 
-  // Group tech offerings by serviceId
   const techMap = useMemo(() => {
     const map = new Map<string, TechOffering[]>();
     techOfferings.forEach((tech) => {
@@ -60,29 +72,36 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
     return map;
   }, [techOfferings]);
 
-  // Filtered services
   const filteredServices = useMemo(() => {
     return services.filter((service) => {
-      // Category filter
-      if (selectedCategory !== "all" && service.categoryId !== selectedCategory) {
+      if (
+        selectedCategory !== "all" &&
+        service.categoryId !== selectedCategory
+      ) {
         return false;
       }
 
-      // City filter - check if any tech offering this service is in this city
       if (cityFilter !== "all") {
         const techs = techMap.get(service.id) || [];
-        const hasCityTech = techs.some((t) => t.technicianCity.toLowerCase() === cityFilter.toLowerCase());
+        const hasCityTech = techs.some(
+          (t) => t.technicianCity.toLowerCase() === cityFilter.toLowerCase(),
+        );
         if (!hasCityTech) return false;
       }
 
-      // Keyword search (service name, description, category name, or tech name)
       if (search.trim()) {
         const q = search.toLowerCase();
         const matchesName = service.name.toLowerCase().includes(q);
-        const matchesDesc = (service.description || "").toLowerCase().includes(q);
-        const matchesCat = (service.categoryName || "").toLowerCase().includes(q);
+        const matchesDesc = (service.description || "")
+          .toLowerCase()
+          .includes(q);
+        const matchesCat = (service.categoryName || "")
+          .toLowerCase()
+          .includes(q);
         const techs = techMap.get(service.id) || [];
-        const matchesTech = techs.some((t) => t.technicianName.toLowerCase().includes(q));
+        const matchesTech = techs.some((t) =>
+          t.technicianName.toLowerCase().includes(q),
+        );
 
         if (!matchesName && !matchesDesc && !matchesCat && !matchesTech) {
           return false;
@@ -95,10 +114,8 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
 
   return (
     <div className="space-y-8">
-      {/* Search and Filters Bar */}
       <div className="card bg-base-100 shadow-sm border border-base-200 p-4 lg:p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Keyword Search */}
           <div className="form-control">
             <label className="input input-bordered flex items-center gap-2 w-full">
               <Search className="h-4 w-4 opacity-60" />
@@ -121,7 +138,6 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
             </label>
           </div>
 
-          {/* Category Filter */}
           <div className="form-control">
             <select
               className="select select-bordered w-full text-sm"
@@ -137,7 +153,6 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
             </select>
           </div>
 
-          {/* City Filter */}
           <div className="form-control">
             <select
               className="select select-bordered w-full text-sm"
@@ -154,7 +169,6 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
           </div>
         </div>
 
-        {/* Quick Category Pills */}
         <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-base-200 items-center">
           <span className="text-xs font-semibold opacity-70 flex items-center gap-1 mr-1">
             <Tag size={13} /> Categories:
@@ -162,7 +176,9 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
           <button
             onClick={() => setSelectedCategory("all")}
             className={`btn btn-xs rounded-full ${
-              selectedCategory === "all" ? "btn-primary" : "btn-ghost bg-base-200"
+              selectedCategory === "all"
+                ? "btn-primary"
+                : "btn-ghost bg-base-200"
             }`}
           >
             All
@@ -172,7 +188,9 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
               className={`btn btn-xs rounded-full ${
-                selectedCategory === cat.id ? "btn-primary" : "btn-ghost bg-base-200"
+                selectedCategory === cat.id
+                  ? "btn-primary"
+                  : "btn-ghost bg-base-200"
               }`}
             >
               {cat.name}
@@ -181,7 +199,6 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
         </div>
       </div>
 
-      {/* Services Results Count */}
       <div className="flex justify-between items-center px-1">
         <h2 className="text-xl font-bold flex items-center gap-2">
           <Briefcase className="h-5 w-5 text-primary" />
@@ -204,7 +221,6 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
         )}
       </div>
 
-      {/* Services List / Cards */}
       {filteredServices.length === 0 ? (
         <div className="card bg-base-100 border border-base-200 p-12 text-center">
           <div className="text-4xl mb-3">🔍</div>
@@ -227,9 +243,8 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredServices.map((service) => {
             const techs = techMap.get(service.id) || [];
-            const lowestPrice = techs.length > 0
-              ? Math.min(...techs.map((t) => t.price))
-              : null;
+            const lowestPrice =
+              techs.length > 0 ? Math.min(...techs.map((t) => t.price)) : null;
 
             return (
               <div
@@ -237,24 +252,28 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
                 className="card bg-base-100 border border-base-200 hover:shadow-md transition-shadow flex flex-col justify-between"
               >
                 <div className="card-body p-6">
-                  {/* Category badge */}
                   <div className="flex items-center justify-between mb-2">
                     <span className="badge badge-primary badge-outline text-xs">
                       {service.categoryName || "General"}
                     </span>
                     {lowestPrice !== null && (
                       <span className="text-xs font-semibold text-success flex items-center">
-                        From <strong className="text-base ml-1">${lowestPrice}</strong>
+                        From{" "}
+                        <strong className="text-base ml-1">
+                          ${lowestPrice}
+                        </strong>
                       </span>
                     )}
                   </div>
 
-                  <h3 className="card-title text-lg font-bold">{service.name}</h3>
+                  <h3 className="card-title text-lg font-bold">
+                    {service.name}
+                  </h3>
                   <p className="text-sm opacity-75 line-clamp-2 mt-1">
-                    {service.description || "Professional service provided by verified technicians."}
+                    {service.description ||
+                      "Professional service provided by verified technicians."}
                   </p>
 
-                  {/* Available Technicians List */}
                   <div className="mt-4 pt-4 border-t border-base-200">
                     <div className="text-xs font-semibold opacity-70 mb-2 flex items-center justify-between">
                       <span>Available Technicians ({techs.length})</span>
@@ -291,7 +310,9 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
                                   </span>
                                   <span className="flex items-center gap-0.5 text-warning font-semibold">
                                     <Star size={10} className="fill-warning" />
-                                    {tech.ratingAvg > 0 ? tech.ratingAvg.toFixed(1) : "New"}
+                                    {tech.ratingAvg > 0
+                                      ? tech.ratingAvg.toFixed(1)
+                                      : "New"}
                                   </span>
                                 </div>
                               </div>
@@ -300,7 +321,10 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
                               <span className="font-bold text-sm text-primary">
                                 ${tech.price}
                               </span>
-                              <ChevronRight size={14} className="opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all inline ml-1" />
+                              <ChevronRight
+                                size={14}
+                                className="opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all inline ml-1"
+                              />
                             </div>
                           </Link>
                         ))}
@@ -317,14 +341,14 @@ export default function ServicesCatalog({ categories, services, techOfferings }:
                   </div>
                 </div>
 
-                {/* Footer action */}
                 <div className="card-actions p-4 pt-0">
                   {techs.length > 0 ? (
                     <Link
                       href={`/public/profile/${techs[0].technicianId}`}
                       className="btn btn-primary btn-sm w-full gap-2"
                     >
-                      <User size={14} /> Book with {techs[0].technicianName} (${techs[0].price})
+                      <User size={14} /> Book with {techs[0].technicianName} ($
+                      {techs[0].price})
                     </Link>
                   ) : (
                     <button disabled className="btn btn-ghost btn-sm w-full">

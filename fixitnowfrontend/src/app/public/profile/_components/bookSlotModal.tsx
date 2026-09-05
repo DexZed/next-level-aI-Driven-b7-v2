@@ -36,10 +36,8 @@ export default function BookSlotModal({
 }: Props) {
   const router = useRouter();
   const [selectedServiceId, setSelectedServiceId] = useState<string>(
-    initialServiceId || (services[0]?.serviceId ?? "")
+    initialServiceId || (services[0]?.serviceId ?? ""),
   );
-
-  // Default to tomorrow 10:00 AM
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const defaultDateStr = tomorrow.toISOString().split("T")[0];
@@ -50,7 +48,8 @@ export default function BookSlotModal({
 
   if (!isOpen) return null;
 
-  const selectedService = services.find((s) => s.serviceId === selectedServiceId) || services[0];
+  const selectedService =
+    services.find((s) => s.serviceId === selectedServiceId) || services[0];
 
   const timeSlots = [
     "09:00",

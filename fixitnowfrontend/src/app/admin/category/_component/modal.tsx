@@ -29,7 +29,6 @@ function Modal() {
     },
   });
   async function submitHandler(data: ServiceSchema) {
-    // TODO: Add handler logic
     console.log("service data:", data);
   }
   return (

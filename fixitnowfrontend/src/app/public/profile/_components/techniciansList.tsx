@@ -40,9 +40,10 @@ type Props = {
 export default function TechniciansList({ technicians }: Props) {
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState("all");
-  const [availabilityFilter, setAvailabilityFilter] = useState<"all" | "available">("all");
+  const [availabilityFilter, setAvailabilityFilter] = useState<
+    "all" | "available"
+  >("all");
 
-  // Unique cities
   const cities = useMemo(() => {
     const set = new Set<string>();
     technicians.forEach((t) => {
@@ -51,10 +52,12 @@ export default function TechniciansList({ technicians }: Props) {
     return Array.from(set);
   }, [technicians]);
 
-  // Filtered technicians
   const filteredTechnicians = useMemo(() => {
     return technicians.filter((tech) => {
-      if (cityFilter !== "all" && tech.city.toLowerCase() !== cityFilter.toLowerCase()) {
+      if (
+        cityFilter !== "all" &&
+        tech.city.toLowerCase() !== cityFilter.toLowerCase()
+      ) {
         return false;
       }
 
@@ -68,7 +71,7 @@ export default function TechniciansList({ technicians }: Props) {
         const matchesBio = (tech.bio || "").toLowerCase().includes(q);
         const matchesCity = (tech.city || "").toLowerCase().includes(q);
         const matchesService = tech.services.some((s) =>
-          s.serviceName.toLowerCase().includes(q)
+          s.serviceName.toLowerCase().includes(q),
         );
 
         if (!matchesName && !matchesBio && !matchesCity && !matchesService) {
@@ -82,10 +85,8 @@ export default function TechniciansList({ technicians }: Props) {
 
   return (
     <div className="space-y-8">
-      {/* Search & Filter Controls */}
       <div className="card bg-base-100 shadow-sm border border-base-200 p-4 lg:p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Keyword Search */}
           <div className="form-control">
             <label className="input input-bordered flex items-center gap-2 w-full">
               <Search className="h-4 w-4 opacity-60" />
@@ -108,14 +109,15 @@ export default function TechniciansList({ technicians }: Props) {
             </label>
           </div>
 
-          {/* City Filter */}
           <div className="form-control">
             <select
               className="select select-bordered w-full text-sm"
               value={cityFilter}
               onChange={(e) => setCityFilter(e.target.value)}
             >
-              <option value="all">All Locations / Cities ({cities.length})</option>
+              <option value="all">
+                All Locations / Cities ({cities.length})
+              </option>
               {cities.map((city) => (
                 <option key={city} value={city}>
                   {city}
@@ -124,7 +126,6 @@ export default function TechniciansList({ technicians }: Props) {
             </select>
           </div>
 
-          {/* Availability Toggle */}
           <div className="form-control flex flex-row items-center gap-2">
             <button
               type="button"
@@ -139,7 +140,9 @@ export default function TechniciansList({ technicians }: Props) {
               type="button"
               onClick={() => setAvailabilityFilter("available")}
               className={`btn btn-sm flex-1 ${
-                availabilityFilter === "available" ? "btn-primary" : "btn-outline"
+                availabilityFilter === "available"
+                  ? "btn-primary"
+                  : "btn-outline"
               }`}
             >
               Available Now
@@ -148,7 +151,6 @@ export default function TechniciansList({ technicians }: Props) {
         </div>
       </div>
 
-      {/* Directory Header Bar */}
       <div className="flex justify-between items-center px-1">
         <h2 className="text-xl font-bold flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-primary" />
@@ -171,13 +173,13 @@ export default function TechniciansList({ technicians }: Props) {
         )}
       </div>
 
-      {/* Technicians Grid */}
       {filteredTechnicians.length === 0 ? (
         <div className="card bg-base-100 border border-base-200 p-12 text-center">
           <div className="text-4xl mb-3">👨‍🔧</div>
           <h3 className="text-lg font-bold">No technicians found</h3>
           <p className="text-sm opacity-70 mt-1 max-w-sm mx-auto">
-            Try adjusting your search query or removing filters to see available professionals.
+            Try adjusting your search query or removing filters to see available
+            professionals.
           </p>
           <button
             onClick={() => {
@@ -198,7 +200,6 @@ export default function TechniciansList({ technicians }: Props) {
               className="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
             >
               <div className="card-body p-6">
-                {/* Header: Avatar, Name, Availability */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-primary/20 text-primary font-bold text-lg flex items-center justify-center border border-primary/30">
@@ -210,7 +211,8 @@ export default function TechniciansList({ technicians }: Props) {
                       </h3>
                       <div className="flex items-center gap-2 text-xs opacity-75 mt-0.5">
                         <span className="flex items-center gap-0.5">
-                          <MapPin size={12} className="text-primary" /> {tech.city}
+                          <MapPin size={12} className="text-primary" />{" "}
+                          {tech.city}
                         </span>
                       </div>
                     </div>
@@ -227,7 +229,6 @@ export default function TechniciansList({ technicians }: Props) {
                   </span>
                 </div>
 
-                {/* Rating & Reviews */}
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-base-200 text-xs">
                   <div className="flex items-center gap-1 text-warning font-bold">
                     <Star size={14} className="fill-warning" />
@@ -235,22 +236,24 @@ export default function TechniciansList({ technicians }: Props) {
                   </div>
                   <span className="opacity-50">•</span>
                   <span className="opacity-70">
-                    {tech.reviewCount} {tech.reviewCount === 1 ? "review" : "reviews"}
+                    {tech.reviewCount}{" "}
+                    {tech.reviewCount === 1 ? "review" : "reviews"}
                   </span>
                 </div>
 
-                {/* Bio snippet */}
                 <p className="text-xs opacity-80 line-clamp-2 mt-2 leading-relaxed">
-                  {tech.bio || "Dedicated professional providing quality home repairs and services."}
+                  {tech.bio ||
+                    "Dedicated professional providing quality home repairs and services."}
                 </p>
 
-                {/* Offered Services Badges */}
                 <div className="mt-4 pt-3 border-t border-base-200">
                   <span className="text-[11px] font-semibold opacity-60 uppercase block mb-1.5">
                     Offered Services ({tech.services.length})
                   </span>
                   {tech.services.length === 0 ? (
-                    <span className="text-xs opacity-40 italic">No specific services listed</span>
+                    <span className="text-xs opacity-40 italic">
+                      No specific services listed
+                    </span>
                   ) : (
                     <div className="flex flex-wrap gap-1.5">
                       {tech.services.slice(0, 3).map((s) => (
@@ -271,7 +274,6 @@ export default function TechniciansList({ technicians }: Props) {
                 </div>
               </div>
 
-              {/* Card Footer: View Profile Link */}
               <div className="card-actions p-4 pt-0">
                 <Link
                   href={`/public/profile/${tech.id}`}
