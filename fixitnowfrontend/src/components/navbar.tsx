@@ -10,7 +10,7 @@ export default function Navbar() {
     { href: "/", label: "Home" },
 
     { href: "/public/services", label: "Services" },
-    { href: "/public/profile/1", label: "Technicians" },
+    { href: "/public/profile", label: "Technicians" },
   ];
   return (
     <>
@@ -56,17 +56,43 @@ export default function Navbar() {
             ))}
           </ul>
         </div>
-        <div className="navbar-end flex gap-2">
+        <div className="navbar-end flex items-center gap-2">
           {session?.data?.user ? (
-            <button
-              onClick={async () => {
-                await authClient.signOut();
-                redirect("/auth/login");
-              }}
-              className="btn btn-outline rounded-md btn-error"
-            >
-              Logout
-            </button>
+            <>
+              {session.data.user.role === "customer" && (
+                <Link
+                  href="/customer/dashboard"
+                  className="btn btn-sm btn-ghost text-xs"
+                >
+                  My Dashboard
+                </Link>
+              )}
+              {session.data.user.role === "technician" && (
+                <Link
+                  href="/technician/dashboard"
+                  className="btn btn-sm btn-ghost text-xs"
+                >
+                  Tech Dashboard
+                </Link>
+              )}
+              {session.data.user.role === "admin" && (
+                <Link
+                  href="/admin/dashboard"
+                  className="btn btn-sm btn-ghost text-xs"
+                >
+                  Admin Panel
+                </Link>
+              )}
+              <button
+                onClick={async () => {
+                  await authClient.signOut();
+                  redirect("/auth/login");
+                }}
+                className="btn btn-sm btn-outline rounded-md btn-error text-xs"
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <Link

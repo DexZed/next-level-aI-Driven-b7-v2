@@ -8,10 +8,7 @@ export const auth = betterAuth({
     provider: "pg",
     schema: schema,
   }),
-  baseURL: {
-    allowedHosts: ["http://localhost:3000", "*.vercel.app"],
-    protocol: process.env.NODE_ENV === "development" ? "http" : "https",
-  },
+
   emailAndPassword: {
     enabled: true,
   },

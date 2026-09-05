@@ -4,6 +4,7 @@ import { relations } from "drizzle-orm/_relations";
 import { bookings } from "./booking-schema";
 import { technicianServices } from "./techService-schema";
 
+// Services Table
 export const services = pgTable(
   "services",
   {

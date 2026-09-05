@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+// Zod Schemas
 const categorySchema = z.object({
   name: z.string().min(1, "Category name is required"),
   description: z.string().min(1, "Description is required"),
@@ -22,10 +23,8 @@ const serviceSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
-export async function toggleUserStatusAction(
-  userId: string,
-  targetStatus: "active" | "banned",
-) {
+// --- User Management Actions ---
+export async function toggleUserStatusAction(userId: string, targetStatus: "active" | "banned") {
   await getSession("admin");
   try {
     await db
@@ -36,10 +35,7 @@ export async function toggleUserStatusAction(
     revalidatePath("/admin/users");
     return { success: true, message: `User status changed to ${targetStatus}` };
   } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to update user status",
-    };
+    return { success: false, error: error.message || "Failed to update user status" };
   }
 }
 
@@ -54,18 +50,12 @@ export async function deleteUserAction(userId: string) {
   }
 }
 
-export async function createCategoryAction(data: {
-  name: string;
-  description: string;
-  isActive?: boolean;
-}) {
+// --- Category Management Actions ---
+export async function createCategoryAction(data: { name: string; description: string; isActive?: boolean }) {
   await getSession("admin");
   const parsed = categorySchema.safeParse(data);
   if (!parsed.success) {
-    return {
-      success: false,
-      error: parsed.error.issues[0]?.message || "Invalid input",
-    };
+    return { success: false, error: parsed.error.issues[0]?.message || "Invalid input" };
   }
 
   try {
@@ -81,24 +71,18 @@ export async function createCategoryAction(data: {
     revalidatePath("/admin/category");
     return { success: true, category: newCat };
   } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to create category",
-    };
+    return { success: false, error: error.message || "Failed to create category" };
   }
 }
 
 export async function updateCategoryAction(
   id: string,
-  data: { name: string; description: string; isActive?: boolean },
+  data: { name: string; description: string; isActive?: boolean }
 ) {
   await getSession("admin");
   const parsed = categorySchema.safeParse(data);
   if (!parsed.success) {
-    return {
-      success: false,
-      error: parsed.error.issues[0]?.message || "Invalid input",
-    };
+    return { success: false, error: parsed.error.issues[0]?.message || "Invalid input" };
   }
 
   try {
@@ -115,31 +99,22 @@ export async function updateCategoryAction(
     revalidatePath("/admin/category");
     return { success: true, category: updated };
   } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to update category",
-    };
+    return { success: false, error: error.message || "Failed to update category" };
   }
 }
 
-export async function toggleCategoryStatusAction(
-  id: string,
-  isActive: boolean,
-) {
+export async function toggleCategoryStatusAction(id: string, isActive: boolean) {
   await getSession("admin");
   try {
-    await db.update(categories).set({ isActive }).where(eq(categories.id, id));
+    await db
+      .update(categories)
+      .set({ isActive })
+      .where(eq(categories.id, id));
 
     revalidatePath("/admin/category");
-    return {
-      success: true,
-      message: `Category ${isActive ? "activated" : "deactivated"}`,
-    };
+    return { success: true, message: `Category ${isActive ? "activated" : "deactivated"}` };
   } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to toggle category status",
-    };
+    return { success: false, error: error.message || "Failed to toggle category status" };
   }
 }
 
@@ -150,13 +125,11 @@ export async function deleteCategoryAction(id: string) {
     revalidatePath("/admin/category");
     return { success: true, message: "Category deleted successfully" };
   } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to delete category",
-    };
+    return { success: false, error: error.message || "Failed to delete category" };
   }
 }
 
+// --- Service Management Actions ---
 export async function createServiceAction(data: {
   name: string;
   description: string;
@@ -166,10 +139,7 @@ export async function createServiceAction(data: {
   await getSession("admin");
   const parsed = serviceSchema.safeParse(data);
   if (!parsed.success) {
-    return {
-      success: false,
-      error: parsed.error.issues[0]?.message || "Invalid input",
-    };
+    return { success: false, error: parsed.error.issues[0]?.message || "Invalid input" };
   }
 
   try {
@@ -186,10 +156,7 @@ export async function createServiceAction(data: {
     revalidatePath("/admin/category");
     return { success: true, service: newService };
   } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to create service",
-    };
+    return { success: false, error: error.message || "Failed to create service" };
   }
 }
 
@@ -200,15 +167,12 @@ export async function updateServiceAction(
     description: string;
     categoryId: string;
     isActive?: boolean;
-  },
+  }
 ) {
   await getSession("admin");
   const parsed = serviceSchema.safeParse(data);
   if (!parsed.success) {
-    return {
-      success: false,
-      error: parsed.error.issues[0]?.message || "Invalid input",
-    };
+    return { success: false, error: parsed.error.issues[0]?.message || "Invalid input" };
   }
 
   try {
@@ -226,28 +190,22 @@ export async function updateServiceAction(
     revalidatePath("/admin/category");
     return { success: true, service: updated };
   } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to update service",
-    };
+    return { success: false, error: error.message || "Failed to update service" };
   }
 }
 
 export async function toggleServiceStatusAction(id: string, isActive: boolean) {
   await getSession("admin");
   try {
-    await db.update(services).set({ isActive }).where(eq(services.id, id));
+    await db
+      .update(services)
+      .set({ isActive })
+      .where(eq(services.id, id));
 
     revalidatePath("/admin/category");
-    return {
-      success: true,
-      message: `Service ${isActive ? "activated" : "deactivated"}`,
-    };
+    return { success: true, message: `Service ${isActive ? "activated" : "deactivated"}` };
   } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to toggle service status",
-    };
+    return { success: false, error: error.message || "Failed to toggle service status" };
   }
 }
 
@@ -258,9 +216,6 @@ export async function deleteServiceAction(id: string) {
     revalidatePath("/admin/category");
     return { success: true, message: "Service deleted successfully" };
   } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to delete service",
-    };
+    return { success: false, error: error.message || "Failed to delete service" };
   }
 }

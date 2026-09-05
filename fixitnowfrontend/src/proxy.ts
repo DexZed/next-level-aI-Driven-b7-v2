@@ -17,15 +17,17 @@ export default async function proxy(req: NextRequest) {
   const status = (session?.user as any)?.status;
 
   if (session && status === "banned") {
-    return NextResponse.redirect(new URL("/auth/banned", req.url));
+    return NextResponse.redirect(new URL("/auth/login?error=banned", req.url));
   }
 
+  // Helper to redirect to login while keeping the last visited page
   const redirectToLogin = () => {
     const loginUrl = new URL("/auth/login", req.url);
     loginUrl.searchParams.set("callbackUrl", fullUrl);
     return NextResponse.redirect(loginUrl);
   };
 
+  // Protected areas
   if (path.startsWith("/admin")) {
     if (!session) return redirectToLogin();
     if (role !== "admin") {
@@ -47,6 +49,7 @@ export default async function proxy(req: NextRequest) {
     }
   }
 
+  // Don't let authenticated users go back to login/register
   if (authRoutes.includes(path) && session && role) {
     return NextResponse.redirect(new URL(`/${role}/dashboard`, req.url));
   }

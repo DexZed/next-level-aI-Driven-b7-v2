@@ -10,6 +10,9 @@ import { bookings } from "@/drizzle/schemas/booking-schema";
 import { user } from "@/drizzle/schemas/auth-schema";
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 
+/**
+ * Gets or creates the technician record for the authenticated user.
+ */
 export async function getOrCreateTechnicianProfile() {
   const sessionUser = await getSession("technician");
 
@@ -22,6 +25,7 @@ export async function getOrCreateTechnicianProfile() {
     return { ...existing, user: sessionUser };
   }
 
+  // Create default technician record if not yet created
   const [created] = await db
     .insert(technicians)
     .values({
@@ -36,6 +40,9 @@ export async function getOrCreateTechnicianProfile() {
   return { ...created, user: sessionUser };
 }
 
+/**
+ * Fetches stats and recent job requests for the technician dashboard.
+ */
 export async function getTechnicianDashboardData() {
   const tech = await getOrCreateTechnicianProfile();
 
@@ -56,20 +63,21 @@ export async function getTechnicianDashboardData() {
     .where(eq(bookings.technicianId, tech.id))
     .orderBy(desc(bookings.scheduledAt));
 
-  const pendingJobs = allTechBookings.filter((b) => b.status === "pending");
-
-  const upcomingJobs = allTechBookings.filter(
-    (b) =>
-      b.status === "confirmed" ||
-      b.status === "in_progress" ||
-      b.status === "paid",
+  const pendingJobs = allTechBookings.filter(
+    (b) => b.status === "pending"
   );
 
-  const completedJobs = allTechBookings.filter((b) => b.status === "completed");
+  const upcomingJobs = allTechBookings.filter(
+    (b) => b.status === "confirmed" || b.status === "in_progress" || b.status === "paid"
+  );
+
+  const completedJobs = allTechBookings.filter(
+    (b) => b.status === "completed"
+  );
 
   const totalEarnings = completedJobs.reduce(
     (acc, job) => acc + (job.totalPrice || 0),
-    0,
+    0
   );
 
   return {
@@ -85,6 +93,9 @@ export async function getTechnicianDashboardData() {
   };
 }
 
+/**
+ * Fetches paginated & filtered bookings for the technician.
+ */
 export async function getTechnicianBookings(params: {
   search?: string;
   status?: string;
@@ -103,7 +114,7 @@ export async function getTechnicianBookings(params: {
   if (search.trim()) {
     const pattern = `%${search.trim()}%`;
     conditions.push(
-      or(ilike(user.name, pattern), ilike(services.name, pattern))!,
+      or(ilike(user.name, pattern), ilike(services.name, pattern))!
     );
   }
 
@@ -150,6 +161,9 @@ export async function getTechnicianBookings(params: {
   };
 }
 
+/**
+ * Fetches the services offered by the technician and all available platform services.
+ */
 export async function getTechnicianServicesData() {
   const tech = await getOrCreateTechnicianProfile();
 
@@ -168,6 +182,7 @@ export async function getTechnicianServicesData() {
     .where(eq(technicianServices.technicianId, tech.id))
     .orderBy(services.name);
 
+  // All available platform services
   const allPlatformServices = await db
     .select({
       id: services.id,
